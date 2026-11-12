@@ -30,20 +30,105 @@
 
 <section class="seite">
   <h1>Haptik-Test: Taptic Engine am ESP32-C6-LCD-1.47</h1>
-  <p class="unter">Schaltplan · Seite 1 von 2 · Branch <code>feat/haptik-test</code></p>
+  <p class="unter">Empfohlene Variante: DRV2605L · Seite 1 von 4 · Branch <code>feat/haptik-test</code></p>
   <div class="plan">
-    <img src="haptik-schaltplan.svg" alt="Schaltplan" style="width:100%;display:block">
+    <img src="haptik-schaltplan-drv2605l.svg" alt="Schaltplan DRV2605L" style="width:100%;display:block">
   </div>
   <h2>Kurz erklärt</h2>
   <p>Die Taptic Engine eines iPhone 7/8 ist ein <b>LRA</b> (Linear Resonant Actuator): eine Spule, die eine gefederte Masse hin- und herbewegt.
   Sie vibriert nur dann kräftig, wenn sie im Takt ihrer <b>Resonanzfrequenz</b> (grob 150–250 Hz) angesteuert wird.
-  Der ESP32-C6 erzeugt diesen Takt an GPIO 2. Weil die Spule einige hundert Milliampere zieht, schaltet nicht der GPIO selbst,
+  Der <b>DRV2605L</b> von Texas Instruments ist ein Treiber-IC genau dafür: Er misst die Resonanz selbst, folgt ihr im Betrieb und
+  bremst die Masse nach jedem Klick aktiv ab. Der ESP32 schickt nur noch einen kurzen I²C-Befehl („Effekt 1 abspielen“).</p>
+  <h2>Vergleich der beiden Varianten</h2>
+  <table>
+    <tr><th></th><th>DRV2605L (empfohlen, Seite 1–2)</th><th>MOSFET (einfach, Seite 3–4)</th></tr>
+    <tr><td>Ansteuerung</td><td>H-Brücke: drückt und zieht</td><td>einseitig: zieht nur</td></tr>
+    <tr><td>Resonanz</td><td>Auto-Kalibrierung, folgt ihr laufend</td><td>von Hand suchen und fest eintragen</td></tr>
+    <tr><td>Klickgefühl</td><td>knackig dank Overdrive und aktivem Bremsen</td><td>weicher, Masse schwingt nach</td></tr>
+    <tr><td>Effekte</td><td>123 fertige Effekte im Chip</td><td>selbst programmieren</td></tr>
+    <tr><td>Anschluss</td><td>4 Drähte: 3V3, GND, SDA, SCL (+ optional IN/TRIG)</td><td>3 Drähte: 5V, GND, GPIO 2</td></tr>
+    <tr><td>Kosten</td><td>Breakout ca. 5–8 €</td><td>Bauteile unter 0,50 €</td></tr>
+    <tr><td>Modellaufzug (P4)</td><td>einfach an den vorhandenen I²C-Bus (GPIO 7/8), Adresse 0x5A frei</td><td>braucht einen freien GPIO</td></tr>
+  </table>
+</section>
+
+<section class="seite">
+  <h1>DRV2605L: Bauteile und Aufbau</h1>
+  <p class="unter">Seite 2 von 4</p>
+
+  <h2>Bauteilliste</h2>
+  <table>
+    <tr><th>Pos.</th><th>Menge</th><th>Bauteil</th><th>Wert / Typ</th><th>Bauform</th><th>Aufgabe / Hinweis</th></tr>
+    <tr><td>U1</td><td>1</td><td>Haptik-Treiber-Breakout</td><td>DRV2605L (z. B. Adafruit 2305 oder günstiges Modul)</td><td>Platine</td><td>Treibt die Spule über eine eingebaute H-Brücke, Auto-Kalibrierung, Effektbibliothek. I²C-Adresse 0x5A.</td></tr>
+    <tr><td>C2</td><td>1</td><td>Elko (optional)</td><td>100 µF, ≥ 6,3 V</td><td>radial</td><td>Puffert Stromspitzen an VIN. Plus an 3V3, Streifen (−) an GND. Nur nötig, wenn das Display beim Klicken flackert.</td></tr>
+    <tr><td>M1</td><td>1</td><td>Taptic Engine</td><td>iPhone 7 / 7 Plus / 8 (Ersatzteil)</td><td>Flexkabel</td><td>Spule ca. 5–15 Ω, an OUT+ und OUT−, Polung egal.</td></tr>
+    <tr><td>–</td><td>–</td><td>Zubehör</td><td>Dupont-Kabel oder Litze, Stiftleiste für das Breakout, Kapton-Band</td><td></td><td>Kein MOSFET, keine Diode, keine Widerstände nötig.</td></tr>
+  </table>
+
+  <h2>Anschlüsse</h2>
+  <table>
+    <tr><th>ESP32-C6-LCD-1.47</th><th>DRV2605L</th><th>Hinweis</th></tr>
+    <tr><td>3V3</td><td>VIN</td><td><b>Nicht 5 V:</b> Die I²C-Pullups des Breakouts hängen an VIN, an 5 V käme zu viel Spannung auf SDA/SCL.</td></tr>
+    <tr><td>GND</td><td>GND</td><td></td></tr>
+    <tr><td>GPIO 18</td><td>SDA</td><td rowspan="2">Vorschlag. Jeder freie GPIO geht (nicht 4–9, 12–15, 21, 22). Im Code <code>Wire.begin(SDA, SCL)</code> anpassen.</td></tr>
+    <tr><td>GPIO 19</td><td>SCL</td></tr>
+    <tr><td>GPIO 20 (optional)</td><td>IN/TRIG</td><td>Externer Auslöser ohne I²C-Verkehr. Ohne diesen Draht wird per I²C ausgelöst.</td></tr>
+    <tr><td>–</td><td>OUT+ / OUT−</td><td>Spulenpins der Taptic Engine.</td></tr>
+  </table>
+
+  <div class="kasten">
+    <div>
+      <h2>1. Aufbau</h2>
+      <ol>
+        <li>Spulenpins an der Taptic Engine suchen (Multimeter, wenige Ohm – genau wie auf Seite 4 beschrieben) und Litze anlöten.</li>
+        <li>Stiftleiste an das Breakout löten.</li>
+        <li>Spule an <b>OUT+</b> und <b>OUT−</b>.</li>
+        <li>Breakout mit 3V3, GND, SDA, SCL verbinden, optional IN/TRIG.</li>
+        <li>Taptic Engine starr befestigen (Schraublaschen oder doppelseitiges Klebeband).</li>
+      </ol>
+      <h2>2. Inbetriebnahme</h2>
+      <ol>
+        <li>I²C-Scan: Unter Adresse <b>0x5A</b> muss der DRV2605L antworten.</li>
+        <li>Modus <b>LRA</b> wählen (Bibliothek 6) und einmal die <b>Auto-Kalibrierung</b> starten – im eingebauten Zustand.</li>
+        <li>Die Kalibrierwerte (Kompensation, Back-EMF, Rückkopplung) im NVS speichern, damit sie nach dem Neustart wieder gelten.</li>
+        <li>Effekt 1 („Strong Click 100 %“) abspielen und fühlen, danach andere Effekte vergleichen.</li>
+      </ol>
+    </div>
+    <div>
+      <h2>3. Einstellwerte für die Kalibrierung</h2>
+      <ul>
+        <li><b>Rated Voltage / Overdrive Clamp:</b> eher vorsichtig beginnen (z. B. ca. 2 V eff. / 3 V Spitze) und nur steigern, wenn der Klick zu schwach ist.</li>
+        <li><b>LRA-Resonanz:</b> Startwert für die Kalibrierung grob 150–250 Hz; der Chip misst den genauen Wert selbst.</li>
+        <li>Datenblatt TI DRV2605L, Abschnitt „Auto-Calibration“, nennt die Register.</li>
+      </ul>
+      <h2>4. Fehlersuche</h2>
+      <ul>
+        <li><b>Kein Gerät unter 0x5A:</b> SDA/SCL vertauscht, falsche Pins im Code, VIN fehlt.</li>
+        <li><b>Kalibrierung schlägt fehl:</b> Spule nicht an OUT+/OUT−, falsche Pins am Flex, Modus noch ERM statt LRA.</li>
+        <li><b>Klick zu schwach:</b> Taptic Engine lose montiert oder Rated Voltage zu niedrig.</li>
+        <li><b>Display flackert / Neustart:</b> C2 ergänzen.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hinweis">
+    <b>Wichtig:</b> VIN an 3,3 V, nicht an 5 V. Die Taptic Engine nie direkt an einen GPIO anschließen.
+  </div>
+</section>
+
+<section class="seite">
+  <h1>Einfache Variante: MOSFET</h1>
+  <p class="unter">Schaltplan · Seite 3 von 4 · ohne Treiber-IC, Bauteile unter 0,50 €</p>
+  <div class="plan">
+    <img src="haptik-schaltplan.svg" alt="Schaltplan" style="width:100%;display:block">
+  </div>
+  <h2>Kurz erklärt</h2>
+  <p>Der ESP32-C6 erzeugt den Takt der Resonanzfrequenz selbst an GPIO 2. Weil die Spule einige hundert Milliampere zieht, schaltet nicht der GPIO selbst,
   sondern der MOSFET Q1 den Strom aus der 5-V-Versorgung.</p>
 </section>
 
 <section class="seite">
-  <h1>Bauteile und Aufbau</h1>
-  <p class="unter">Seite 2 von 2</p>
+  <h1>Einfache Variante: Bauteile und Aufbau</h1>
+  <p class="unter">Seite 4 von 4</p>
 
   <h2>Bauteilliste</h2>
   <table>
@@ -103,7 +188,7 @@
     <b>Wichtig:</b> Die Spule nie direkt an einen GPIO anschließen (einige 100 mA statt max. ca. 20–40 mA).
     Nicht dauerhaft brummen lassen – die Spule ist für kurze Pulse gedacht und wird sonst warm.
   </div>
-  <p class="fuss">Repo Waveshare_ESP32_C6_1_47_inch · Seitenbranch feat/haptik-test (nie nach main) · Quelle: docs/haptik-anleitung.html</p>
+  <p class="fuss">Repo Waveshare_ESP32_C6_1_47_inch · Seitenbranch feat/haptik-test (nie nach main) · DRV2605L-Firmware folgt · Quelle: docs/haptik-anleitung.html</p>
 </section>
 
 </body>

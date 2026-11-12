@@ -25,9 +25,17 @@ pio run -e haptik_test -t upload
 
 ### Schaltung
 
+Empfohlen ist der Haptik-Treiber **DRV2605L** (Auto-Kalibrierung, aktives Bremsen, fertige Effekte).
+Das Testprogramm steuert bisher die einfache MOSFET-Variante; die DRV2605L-Firmware folgt.
+
+![Schaltplan DRV2605L](docs/haptik-schaltplan-drv2605l.svg)
+
+Einfache Variante mit MOSFET:
+
 ![Schaltplan Haptik-Test](docs/haptik-schaltplan.svg)
 
-Zum Ausdrucken: [docs/haptik-anleitung.pdf](docs/haptik-anleitung.pdf) – Seite 1 Schaltplan, Seite 2 Bauteile, Aufbau, Inbetriebnahme und Fehlersuche
+Zum Ausdrucken: [docs/haptik-anleitung.pdf](docs/haptik-anleitung.pdf) – Seite 1–2 empfohlene Variante mit **DRV2605L**,
+Seite 3–4 einfache MOSFET-Variante, jeweils mit Schaltplan, Bauteilen, Aufbau und Fehlersuche
 (Quelle `docs/haptik-anleitung.html`, PDF mit Edge „Drucken → Als PDF speichern“ neu erzeugen).
 
 Die Spule hat nur wenige Ohm und darf **nie direkt an einen GPIO**. Ein Logic-Level-MOSFET schaltet sie an 5 V.

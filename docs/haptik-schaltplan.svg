@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" width="960" height="640" font-family="Segoe UI, Arial, sans-serif" font-size="15">
   <rect width="960" height="640" fill="#ffffff"/>
-  <text x="480" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#1a2233">Haptik-Test: Taptic Engine am ESP32-C6-LCD-1.47</text>
+  <text x="480" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#1a2233">Einfach: Taptic Engine über MOSFET am ESP32-C6-LCD-1.47</text>
 
   <g stroke="#1a2233" stroke-width="2.2" fill="none" stroke-linecap="round">
     <!-- Board -->

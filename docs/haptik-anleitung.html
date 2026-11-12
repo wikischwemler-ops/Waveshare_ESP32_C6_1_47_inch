@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Haptik-Test Taptic Engine</title>
+<style>
+  @page { size: A4; margin: 11mm 12mm 10mm 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; color: #1a2233; font-size: 8.7pt; line-height: 1.3; margin: 0; }
+  .seite { page-break-after: always; }
+  .seite:last-child { page-break-after: auto; }
+  h1 { font-size: 17pt; margin: 0 0 2mm; }
+  h2 { font-size: 10.5pt; margin: 3mm 0 1mm; color: #2a4a7a; border-bottom: 1px solid #c9d4e6; padding-bottom: 0.6mm; }
+  .unter { color: #55607a; margin: 0 0 4mm; font-size: 10pt; }
+  .plan { width: 100%; border: 1px solid #c9d4e6; border-radius: 3mm; padding: 2mm; }
+  .plan svg { width: 100%; height: auto; display: block; }
+  table { border-collapse: collapse; width: 100%; font-size: 8.1pt; }
+  th, td { border: 1px solid #c9d4e6; padding: 0.8mm 1.4mm; text-align: left; vertical-align: top; }
+  th { background: #eef3fb; }
+  ol, ul { margin: 0.5mm 0 0 0; padding-left: 5mm; }
+  li { margin: 0.3mm 0; }
+  .hinweis { background: #fff8e6; border: 1px solid #e0b84a; border-radius: 2mm; padding: 2mm 3mm; margin-top: 3mm; }
+  .kasten { display: flex; gap: 4mm; }
+  .kasten > div { flex: 1; }
+  code { font-family: Consolas, monospace; font-size: 8.8pt; background: #f1f3f7; padding: 0 1mm; border-radius: 1mm; }
+  .fuss { color: #8892a6; font-size: 8pt; margin-top: 4mm; }
+</style>
+</head>
+<body>
+
+<section class="seite">
+  <h1>Haptik-Test: Taptic Engine am ESP32-C6-LCD-1.47</h1>
+  <p class="unter">Schaltplan · Seite 1 von 2 · Branch <code>feat/haptik-test</code></p>
+  <div class="plan">
+    <img src="haptik-schaltplan.svg" alt="Schaltplan" style="width:100%;display:block">
+  </div>
+  <h2>Kurz erklärt</h2>
+  <p>Die Taptic Engine eines iPhone 7/8 ist ein <b>LRA</b> (Linear Resonant Actuator): eine Spule, die eine gefederte Masse hin- und herbewegt.
+  Sie vibriert nur dann kräftig, wenn sie im Takt ihrer <b>Resonanzfrequenz</b> (grob 150–250 Hz) angesteuert wird.
+  Der ESP32-C6 erzeugt diesen Takt an GPIO 2. Weil die Spule einige hundert Milliampere zieht, schaltet nicht der GPIO selbst,
+  sondern der MOSFET Q1 den Strom aus der 5-V-Versorgung.</p>
+</section>
+
+<section class="seite">
+  <h1>Bauteile und Aufbau</h1>
+  <p class="unter">Seite 2 von 2</p>
+
+  <h2>Bauteilliste</h2>
+  <table>
+    <tr><th>Pos.</th><th>Menge</th><th>Bauteil</th><th>Wert / Typ</th><th>Bauform</th><th>Aufgabe / Hinweis</th></tr>
+    <tr><td>Q1</td><td>1</td><td>N-Kanal-MOSFET, Logic-Level</td><td>AO3400A (Ersatz: IRLML6244, SI2302)</td><td>SOT-23</td><td>Schaltet die Spule. Muss bei 3,3 V am Gate sicher durchschalten. Pin 1 Gate, Pin 2 Source, Pin 3 Drain.</td></tr>
+    <tr><td>R1</td><td>1</td><td>Widerstand</td><td>100 Ω, 1/4 W</td><td>THT oder 0805</td><td>Gate-Vorwiderstand: begrenzt den Umladestrom des Gates, schützt GPIO 2.</td></tr>
+    <tr><td>R2</td><td>1</td><td>Widerstand</td><td>10 kΩ, 1/4 W</td><td>THT oder 0805</td><td>Pulldown: hält Q1 sicher aus, solange der ESP32 startet oder neu flasht.</td></tr>
+    <tr><td>D1</td><td>1</td><td>Diode</td><td>1N4148 (oder Schottky 1N5819)</td><td>DO-35</td><td>Freilaufdiode: fängt die Spannungsspitze beim Abschalten der Spule ab. Ring (Kathode) an +5 V.</td></tr>
+    <tr><td>C1</td><td>1</td><td>Elko</td><td>100 µF, ≥ 10 V</td><td>radial</td><td>Puffert Stromspitzen, damit die 5 V nicht einbrechen. Plus an +5 V, Streifen (−) an GND. Alternativ Keramik 22–47 µF (ungepolt).</td></tr>
+    <tr><td>M1</td><td>1</td><td>Taptic Engine</td><td>iPhone 7 / 7 Plus / 8 (Ersatzteil)</td><td>Flexkabel</td><td>Spule ca. 5–15 Ω, Polung egal.</td></tr>
+    <tr><td>–</td><td>–</td><td>Zubehör</td><td>Kupferlackdraht oder Litze 0,1–0,25 mm², Lochraster oder SOT-23-Adapter, Kapton-Band</td><td></td><td>Adapterplatine macht das Löten des winzigen SOT-23 deutlich leichter.</td></tr>
+  </table>
+
+  <div class="kasten">
+    <div>
+      <h2>1. Spulenpins finden</h2>
+      <ol>
+        <li>Multimeter auf Durchgang: Kontakte am Flexstecker suchen, die untereinander verbunden sind (Gruppen bilden).</li>
+        <li>Auf Ω umschalten: zwischen genau <b>zwei Gruppen</b> misst man wenige Ohm (ca. 5–15 Ω) – das ist die Spule.</li>
+        <li>Kontakte im kΩ-Bereich oder ohne Verbindung nicht anschließen.</li>
+        <li>Gegenprobe: 1,5-V-Zelle über ca. 100 Ω kurz anlegen – es klickt hörbar.</li>
+        <li>Dünne Litze an die Spulenpads löten (zusammengehörige Pads gleich verbinden), mit Kapton oder Heißkleber zugentlasten.</li>
+      </ol>
+      <h2>2. Aufbau</h2>
+      <ol>
+        <li>Q1 auf den SOT-23-Adapter löten, Pinbelegung prüfen (Pin 3 liegt allein auf einer Seite).</li>
+        <li>R2 von Gate nach Source/GND, R1 von GPIO 2 an das Gate.</li>
+        <li>Spule zwischen +5 V und Drain, D1 direkt parallel zur Spule (Ring an +5 V).</li>
+        <li>C1 nah an Spule und Q1 zwischen +5 V und GND, Polung beachten.</li>
+        <li>Erst zum Schluss mit dem Board verbinden: <b>5V</b>, <b>GND</b>, <b>GPIO 2</b> der Stiftleiste. Ist 5 V dort nicht herausgeführt, VBUS am USB-Anschluss abgreifen.</li>
+        <li>Taptic Engine starr befestigen (Schraublaschen oder doppelseitiges Klebeband) – lose liegend spürt man wenig.</li>
+      </ol>
+    </div>
+    <div>
+      <h2>3. Inbetriebnahme</h2>
+      <ol>
+        <li>Vor dem Einschalten messen: kein Kurzschluss zwischen +5 V und GND.</li>
+        <li>Flashen: <code>pio run -e haptik_test -t upload --upload-port COM8</code></li>
+        <li>BOOT-Taste kurz drücken: Klick, RGB-LED blinkt grün.</li>
+        <li>Zweimal schnell drücken bis Modus <b>Brummen</b>, dann BOOT halten: Frequenz steigt in 10-Hz-Schritten.</li>
+        <li>Die Frequenz mit der stärksten Vibration ist die Resonanz – im eingebauten Zustand messen.</li>
+        <li>Zurück in Modus <b>Klick 2/3/5</b> und den knackigsten Klick wählen. Frequenz und Modus bleiben gespeichert.</li>
+        <li>Zurück zum Spiel: <code>pio run -t upload</code></li>
+      </ol>
+      <h2>4. Fehlersuche</h2>
+      <ul>
+        <li><b>Nichts zu spüren:</b> Spulenpins vertauscht mit Sensor-Pins? Q1-Pinbelegung? 5 V vorhanden?</li>
+        <li><b>Nur leises Ticken:</b> Frequenz weit neben der Resonanz oder Taptic Engine nicht fest montiert.</li>
+        <li><b>Q1 wird heiß:</b> Gate erreicht keine 3,3 V oder MOSFET ist kein Logic-Level-Typ.</li>
+        <li><b>Board startet neu / Display flackert:</b> C1 fehlt oder zu weit weg.</li>
+        <li><b>Q1 defekt:</b> D1 fehlt oder ist falsch herum eingebaut.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="hinweis">
+    <b>Wichtig:</b> Die Spule nie direkt an einen GPIO anschließen (einige 100 mA statt max. ca. 20–40 mA).
+    Nicht dauerhaft brummen lassen – die Spule ist für kurze Pulse gedacht und wird sonst warm.
+  </div>
+  <p class="fuss">Repo Waveshare_ESP32_C6_1_47_inch · Seitenbranch feat/haptik-test (nie nach main) · Quelle: docs/haptik-anleitung.html</p>
+</section>
+
+</body>
+</html>

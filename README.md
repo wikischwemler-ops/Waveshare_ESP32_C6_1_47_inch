@@ -27,6 +27,9 @@ pio run -e haptik_test -t upload
 
 ![Schaltplan Haptik-Test](docs/haptik-schaltplan.svg)
 
+Zum Ausdrucken: [docs/haptik-anleitung.pdf](docs/haptik-anleitung.pdf) – Seite 1 Schaltplan, Seite 2 Bauteile, Aufbau, Inbetriebnahme und Fehlersuche
+(Quelle `docs/haptik-anleitung.html`, PDF mit Edge „Drucken → Als PDF speichern“ neu erzeugen).
+
 Die Spule hat nur wenige Ohm und darf **nie direkt an einen GPIO**. Ein Logic-Level-MOSFET schaltet sie an 5 V.
 
 | Teil | Wert / Typ | Anschluss |

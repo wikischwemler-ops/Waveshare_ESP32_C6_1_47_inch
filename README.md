@@ -14,6 +14,8 @@ Ein Jump'n'Run im Querformat. Flitz läuft von allein, die Welt wird zufällig e
 
 ## Haptik-Test (Taptic Engine)
 
+> **Seitenbranch:** Der Haptik-Test lebt nur auf `feat/haptik-test` und wird **nie nach `main` gemergt** (kein PR).
+
 Testprogramm für eine iPhone-Taptic-Engine (LRA) als Vorstufe für die Tasten-Haptik am Modellaufzug.
 Es ersetzt beim Flashen das Spiel; zurück geht es mit `pio run -t upload`.
 

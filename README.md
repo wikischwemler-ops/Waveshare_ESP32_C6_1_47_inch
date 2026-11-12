@@ -25,15 +25,22 @@ pio run -e haptik_test -t upload
 
 ### Schaltung
 
-Die Spule hat nur wenige Ohm und darf **nie direkt an einen GPIO**. Ein Logic-Level-MOSFET schaltet sie an 5 V:
+![Schaltplan Haptik-Test](docs/haptik-schaltplan.svg)
 
-```
-5 V (VBUS) ──┬── Taptic Engine ──┬── Drain   AO3400
-             └──── 1N4148 ───────┘          (Kathode an 5 V)
-GPIO 2 ── 100 Ω ── Gate,   10 kΩ Gate → GND,   Source → GND
-```
+Die Spule hat nur wenige Ohm und darf **nie direkt an einen GPIO**. Ein Logic-Level-MOSFET schaltet sie an 5 V.
 
-Die Spulenpins am Flex mit dem Multimeter suchen (wenige Ohm zwischen zwei Kontaktgruppen).
+| Teil | Wert / Typ | Anschluss |
+|---|---|---|
+| Q1 | AO3400A (N-Kanal, SOT-23) oder IRLML6244 | Pin 1 Gate, Pin 2 Source → GND, Pin 3 Drain → Spule |
+| R1 | 100 Ω | GPIO 2 → Gate |
+| R2 | 10 kΩ | Gate → GND (hält Q1 beim Start aus) |
+| D1 | 1N4148 (oder 1N5819) | parallel zur Spule, Kathode/Ring an +5 V |
+| C1 | 100 µF / ≥ 10 V Elko | +5 V → GND, nah an der Spule, Plus an +5 V |
+| Spule | iPhone-7/8-Taptic-Engine | zwischen +5 V und Drain, Polung egal |
+
+Die Spulenpins am Flex mit dem Multimeter suchen: wenige Ohm zwischen zwei Kontaktgruppen, untereinander
+verbundene Kontakte gehören zum selben Anschluss. Der SOT-23 ist winzig; ein kleines SOT-23-Adapterplatinchen
+macht das Löten leichter.
 
 ### Bedienung (BOOT-Taste)
 

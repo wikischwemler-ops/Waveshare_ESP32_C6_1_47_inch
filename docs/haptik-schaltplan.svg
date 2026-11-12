@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" width="960" height="640" font-family="Segoe UI, Arial, sans-serif" font-size="15">
+  <rect width="960" height="640" fill="#ffffff"/>
+  <text x="480" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#1a2233">Haptik-Test: Taptic Engine am ESP32-C6-LCD-1.47</text>
+
+  <g stroke="#1a2233" stroke-width="2.2" fill="none" stroke-linecap="round">
+    <!-- Board -->
+    <rect x="30" y="70" width="200" height="440" rx="10" fill="#eef3fb"/>
+    <!-- 5-V-Schiene -->
+    <line x1="230" y1="100" x2="880" y2="100" stroke="#c0392b"/>
+    <!-- GND-Schiene -->
+    <line x1="230" y1="480" x2="880" y2="480"/>
+
+    <!-- Gate-Pfad: GPIO2 - R1 - Gate -->
+    <line x1="230" y1="330" x2="290" y2="330"/>
+    <rect x="290" y="321" width="70" height="18" fill="#ffffff"/>
+    <line x1="360" y1="330" x2="588" y2="330"/>
+
+    <!-- R2 Pulldown -->
+    <line x1="520" y1="330" x2="520" y2="380"/>
+    <rect x="511" y="380" width="18" height="60" fill="#ffffff"/>
+    <line x1="520" y1="440" x2="520" y2="480"/>
+
+    <!-- Spule (LRA) -->
+    <line x1="620" y1="100" x2="620" y2="145"/>
+    <path d="M620,145 a12,10 0 0 1 0,20 a12,10 0 0 1 0,20 a12,10 0 0 1 0,20 a12,10 0 0 1 0,20"/>
+    <line x1="620" y1="225" x2="620" y2="305"/>
+
+    <!-- Freilaufdiode D1 -->
+    <line x1="760" y1="100" x2="760" y2="168"/>
+    <line x1="744" y1="168" x2="776" y2="168"/>
+    <polygon points="744,205 776,205 760,169" fill="#1a2233"/>
+    <line x1="760" y1="205" x2="760" y2="270"/>
+    <line x1="620" y1="270" x2="760" y2="270"/>
+
+    <!-- MOSFET Q1 (N-Kanal) -->
+    <line x1="588" y1="302" x2="588" y2="358"/>
+    <line x1="600" y1="298" x2="600" y2="314"/>
+    <line x1="600" y1="322" x2="600" y2="338"/>
+    <line x1="600" y1="346" x2="600" y2="362"/>
+    <line x1="600" y1="305" x2="620" y2="305"/>
+    <line x1="600" y1="355" x2="620" y2="355"/>
+    <line x1="620" y1="330" x2="620" y2="355"/>
+    <line x1="606" y1="330" x2="620" y2="330"/>
+    <polygon points="601,330 611,324 611,336" fill="#1a2233"/>
+    <line x1="620" y1="355" x2="620" y2="480"/>
+
+    <!-- C1 Puffer-Elko -->
+    <line x1="880" y1="100" x2="880" y2="275"/>
+    <line x1="862" y1="275" x2="898" y2="275"/>
+    <path d="M862,292 Q880,282 898,292"/>
+    <line x1="880" y1="288" x2="880" y2="480"/>
+  </g>
+
+  <!-- Knotenpunkte -->
+  <g fill="#1a2233">
+    <circle cx="620" cy="100" r="4.5" fill="#c0392b"/>
+    <circle cx="760" cy="100" r="4.5" fill="#c0392b"/>
+    <circle cx="620" cy="270" r="4.5"/>
+    <circle cx="520" cy="330" r="4.5"/>
+    <circle cx="520" cy="480" r="4.5"/>
+    <circle cx="620" cy="480" r="4.5"/>
+    <circle cx="230" cy="100" r="5" fill="#c0392b"/>
+    <circle cx="230" cy="330" r="5"/>
+    <circle cx="230" cy="480" r="5"/>
+  </g>
+
+  <!-- Board-Beschriftung -->
+  <text x="130" y="200" text-anchor="middle" font-weight="bold" fill="#1a2233">Waveshare</text>
+  <text x="130" y="222" text-anchor="middle" font-weight="bold" fill="#1a2233">ESP32-C6-LCD-1.47</text>
+  <text x="130" y="246" text-anchor="middle" font-size="13" fill="#55607a">Stiftleiste</text>
+  <text x="220" y="105" text-anchor="end" fill="#c0392b" font-weight="bold">5V</text>
+  <text x="220" y="335" text-anchor="end" font-weight="bold" fill="#1a2233">GPIO 2</text>
+  <text x="220" y="485" text-anchor="end" font-weight="bold" fill="#1a2233">GND</text>
+  <text x="250" y="92" fill="#c0392b" font-size="13">+5 V vom USB (VBUS)</text>
+  <text x="250" y="500" fill="#1a2233" font-size="13">Masse</text>
+
+  <!-- Bauteilbeschriftung -->
+  <text x="325" y="312" text-anchor="middle" font-weight="bold" fill="#1a2233">R1 100 Ω</text>
+  <text x="325" y="360" text-anchor="middle" font-size="13" fill="#55607a">Gate-Vorwiderstand</text>
+  <text x="440" y="405" text-anchor="end" font-weight="bold" fill="#1a2233">R2 10 kΩ</text>
+  <text x="502" y="425" text-anchor="end" font-size="13" fill="#55607a">Pulldown: aus beim Start</text>
+
+  <text x="600" y="175" text-anchor="end" font-weight="bold" fill="#1a2233">Taptic Engine</text>
+  <text x="600" y="195" text-anchor="end" font-size="13" fill="#55607a">LRA, Spule ca. 5–15 Ω</text>
+  <text x="600" y="212" text-anchor="end" font-size="13" fill="#55607a">Polung egal</text>
+
+  <text x="785" y="180" font-weight="bold" fill="#1a2233">D1 1N4148</text>
+  <text x="785" y="198" font-size="13" fill="#55607a">Ring/Kathode</text>
+  <text x="785" y="214" font-size="13" fill="#55607a">nach +5 V</text>
+
+  <text x="640" y="300" font-size="13" fill="#1a2233">D (Pin 3)</text>
+  <text x="640" y="395" font-size="13" fill="#1a2233">S (Pin 2)</text>
+  <text x="575" y="318" text-anchor="end" font-size="13" fill="#1a2233">G (Pin 1)</text>
+  <text x="640" y="340" font-weight="bold" fill="#1a2233">Q1 AO3400A</text>
+  <text x="640" y="358" font-size="13" fill="#55607a">N-Kanal, Logic-Level</text>
+
+  <text x="868" y="268" text-anchor="end" font-size="16" font-weight="bold" fill="#1a2233">+</text>
+  <text x="868" y="330" text-anchor="end" font-weight="bold" fill="#1a2233">C1</text>
+  <text x="868" y="348" text-anchor="end" font-size="13" fill="#55607a">100 µF / 10 V</text>
+  <text x="868" y="364" text-anchor="end" font-size="13" fill="#55607a">nah an der Spule</text>
+
+  <!-- Hinweise -->
+  <rect x="30" y="530" width="900" height="96" rx="8" fill="#fff8e6" stroke="#e0b84a"/>
+  <text x="46" y="555" font-size="14" fill="#1a2233">• Spule nie direkt an einen GPIO: Strom einige 100 mA, ein GPIO verträgt nur ca. 20–40 mA.</text>
+  <text x="46" y="577" font-size="14" fill="#1a2233">• D1 fängt die Abschaltspitze der Spule ab. Ohne D1 kann Q1 durchschlagen. Kathode (Ring) an +5 V.</text>
+  <text x="46" y="599" font-size="14" fill="#1a2233">• AO3400A im SOT-23: Pin 1 = Gate, Pin 2 = Source, Pin 3 = Drain (Pin 3 allein auf einer Seite).</text>
+  <text x="46" y="619" font-size="14" fill="#1a2233">• C1 puffert die Stromspitzen, damit die 5 V des Boards nicht einbrechen. Pluspol an +5 V.</text>
+</svg>
